@@ -233,8 +233,155 @@
 
 
 
+# import streamlit as st
+# import requests
+
+# # Define custom CSS for themes and layout
+# custom_css = """
+# <style>
+#     body {
+#         font-family: 'Arial', sans-serif;
+#     }
+
+#     /* Light theme */
+#     .light-theme {
+#         background-color: #F4F4F4; /* Light gray */
+#         color: #2C3E50; /* Dark gray-blue */
+#     }
+
+#     /* Dark theme */
+#     .dark-theme {
+#         background-color: #1E1E1E; /* Dark background */
+#         color: #FFFFFF; /* White text */
+#     }
+
+#     /* Title styling */
+#     h1 {
+#         color: #FF5733; /* Bright orange */
+#         text-align: center;
+#         font-size: 2.5em;
+#     }
+
+#     /* Input box styling */
+#     .stNumberInput > div {
+#         background-color: #FFFFFF;
+#         border: 2px solid #FF5733;
+#         border-radius: 10px;
+#         padding: 0px;
+#         font-size: 1.2em;
+#     }
+
+#     /* Button styling */
+#     .stButton > button {
+#         border-radius: 10px;
+#         padding: 10px 15px;
+#         font-size: 1em;
+#         font-weight: bold;
+#     }
+
+#     /* History box styling */
+#     .history-box {
+#         background-color: #FFFFFF;
+#         border: 2px solid #FF5733;
+#         border-radius: 10px;
+#         padding: 10px;
+#         margin-top: 20px;
+#         font-size: 1em;
+#         overflow-y: auto;
+#         max-height: 150px;
+#     }
+# </style>
+# """
+
+# # Inject the CSS into the app
+# st.markdown(custom_css, unsafe_allow_html=True)
+
+# # Theme selection
+# theme = st.radio("Choose a theme:", ["Light", "Dark"], horizontal=True)
+
+# # Apply the chosen theme
+# if theme == "Light":
+#     st.markdown('<div class="light-theme">', unsafe_allow_html=True)
+# else:
+#     st.markdown('<div class="dark-theme">', unsafe_allow_html=True)
+
+# # Title
+# st.title("🔢 Advanced Calculator")
+
+# # Two-column layout
+# col1, col2 = st.columns(2)
+
+# # Initialize session state for history
+# if "history" not in st.session_state:
+#     st.session_state.history = []
+
+# # Column 1: Inputs and operations
+# with col1:
+#     st.header("Inputs")
+#     num1 = st.number_input("Enter the first number", value=0.0, key="num1")
+#     num2 = st.number_input("Enter the second number", value=0.0, key="num2")
+
+#     st.subheader("Choose an operation:")
+#     operation = st.radio(
+#         "Operation:",
+#         ["Add", "Subtract", "Multiply", "Divide"],
+#         index=0,
+#         horizontal=True,
+#     )
+
+#     # Clear button to reset inputs
+#     if st.button("Clear Inputs"):
+#         st.session_state.num1 = 0.0
+#         st.session_state.num2 = 0.0
+
+# # Column 2: Results and history
+# with col2:
+#     st.header("Result")
+#     if st.button("Calculate"):
+#         # Prepare payload for API
+#         payload = {"num1": num1, "num2": num2}
+
+#         # Make API requests based on operation
+#         if operation == "Add":
+#             response = requests.post("http://127.0.0.1:5000/api/add", json=payload)
+#         elif operation == "Subtract":
+#             response = requests.post("http://127.0.0.1:5000/api/subtract", json=payload)
+#         elif operation == "Multiply":
+#             response = requests.post("http://127.0.0.1:5000/api/multiply", json=payload)
+#         elif operation == "Divide":
+#             response = requests.post("http://127.0.0.1:5000/api/divide", json=payload)
+
+#         # Display the result
+#         if response.status_code == 200:
+#             result = response.json().get("result")
+#             st.success(f"The result is: {result}")
+#             # Add calculation to history
+#             st.session_state.history.append(
+#                 f"{num1} {operation} {num2} = {result}"
+#             )
+#         else:
+#             error = response.json().get("error", "Unknown error")
+#             st.error(f"Error: {error}")
+
+#     # History of calculations
+#     st.subheader("History")
+#     if st.session_state.history:
+#         st.markdown('<div class="history-box">', unsafe_allow_html=True)
+#         for item in st.session_state.history:
+#             st.write(item)
+#         st.markdown("</div>", unsafe_allow_html=True)
+#     else:
+#         st.info("No history available yet.")
+
+# # End of theme div
+# st.markdown("</div>", unsafe_allow_html=True)
+
+
+
 import streamlit as st
 import requests
+import subprocess
+import sys
 
 # Define custom CSS for themes and layout
 custom_css = """
@@ -242,35 +389,30 @@ custom_css = """
     body {
         font-family: 'Arial', sans-serif;
     }
-
     /* Light theme */
     .light-theme {
         background-color: #F4F4F4; /* Light gray */
         color: #2C3E50; /* Dark gray-blue */
     }
-
     /* Dark theme */
     .dark-theme {
         background-color: #1E1E1E; /* Dark background */
         color: #FFFFFF; /* White text */
     }
-
     /* Title styling */
     h1 {
         color: #FF5733; /* Bright orange */
         text-align: center;
         font-size: 2.5em;
     }
-
     /* Input box styling */
     .stNumberInput > div {
         background-color: #FFFFFF;
         border: 2px solid #FF5733;
         border-radius: 10px;
-        padding: 0px;
+        padding: 10px;
         font-size: 1.2em;
     }
-
     /* Button styling */
     .stButton > button {
         border-radius: 10px;
@@ -278,7 +420,6 @@ custom_css = """
         font-size: 1em;
         font-weight: bold;
     }
-
     /* History box styling */
     .history-box {
         background-color: #FFFFFF;
@@ -320,13 +461,9 @@ with col1:
     st.header("Inputs")
     num1 = st.number_input("Enter the first number", value=0.0, key="num1")
     num2 = st.number_input("Enter the second number", value=0.0, key="num2")
-
     st.subheader("Choose an operation:")
     operation = st.radio(
-        "Operation:",
-        ["Add", "Subtract", "Multiply", "Divide"],
-        index=0,
-        horizontal=True,
+        "Operation:", ["Add", "Subtract", "Multiply", "Divide"], index=0, horizontal=True,
     )
 
     # Clear button to reset inputs
@@ -356,9 +493,7 @@ with col2:
             result = response.json().get("result")
             st.success(f"The result is: {result}")
             # Add calculation to history
-            st.session_state.history.append(
-                f"{num1} {operation} {num2} = {result}"
-            )
+            st.session_state.history.append(f"{num1} {operation} {num2} = {result}")
         else:
             error = response.json().get("error", "Unknown error")
             st.error(f"Error: {error}")
@@ -372,6 +507,15 @@ with col2:
         st.markdown("</div>", unsafe_allow_html=True)
     else:
         st.info("No history available yet.")
+
+    # Run app.py in background when button is pressed
+    if st.button("Run app.py"):
+        try:
+            # Running app.py as a separate process
+            subprocess.Popen([sys.executable, "app.py"])  # Runs app.py as a separate process
+            st.write("app.py is running in the background!")
+        except Exception as e:
+            st.error(f"Error starting app.py: {str(e)}")
 
 # End of theme div
 st.markdown("</div>", unsafe_allow_html=True)
