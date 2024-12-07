@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculator</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="calculator">
+        <h1>🧮 Calculator</h1>
+        <input type="number" id="num1" placeholder="Enter first number">
+        <input type="number" id="num2" placeholder="Enter second number">
+        <div class="buttons">
+            <button onclick="performOperation('add')">+</button>
+            <button onclick="performOperation('subtract')">-</button>
+            <button onclick="performOperation('multiply')">*</button>
+            <button onclick="performOperation('divide')">/</button>
+        </div>
+        <h2>Result: <span id="result">0</span></h2>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>
