@@ -410,7 +410,7 @@ custom_css = """
         background-color: #FFFFFF;
         border: 2px solid #FF5733;
         border-radius: 10px;
-        padding: 10px;
+        padding: 0px;
         font-size: 1.2em;
     }
     /* Button styling */
